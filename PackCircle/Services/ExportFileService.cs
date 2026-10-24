@@ -1,33 +1,64 @@
-﻿using System.IO;
-using System.Text;
-using PackCircle.Models;
+﻿using PackCircle.Models;
+using System.IO;
+using System.Windows;
+using Microsoft.Win32;
 
 namespace PackCircle.Services;
 
-public class ExportFileService
+public class ExportFileService(IExport csvExport, IExport excelExport, IExport txtExport)
 {
-    public async Task ExportToCsv(string filePath, ICollection<Circle> circles)
+    public async Task CreateFile(ICollection<Circle> circles)
     {
-        StringBuilder csvContent = new StringBuilder();
-        csvContent.AppendLine("X,Y");
-        foreach (Circle circle in circles)
+        SaveFileDialog saveFileDialog = new SaveFileDialog
         {
-            csvContent.AppendLine($"{circle.X},{circle.Y}");
-        }
+            Filter = "CSV files (*.csv)|*.csv|Excel Workbook (*.xlsx)|*.xlsx|Text files (*.txt)|*.txt",
+            Title = "Export Center Positions",
+            FileName = "CenterPositions"
+        };
 
-        await File.WriteAllTextAsync(filePath, csvContent.ToString(), Encoding.UTF8);
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            string filePath = saveFileDialog.FileName;
+            try
+            {
+                string extension = Path.GetExtension(filePath).ToLower();
+                switch (extension)
+                {
+                    case ".csv":
+                        await csvExport.Export(filePath, circles);
+                        break;
+                    case ".txt":
+                        await txtExport.Export(filePath, circles);
+                        break;
+                    case ".xlsx":
+                        await excelExport.Export(filePath, circles);
+                        break;
+                }
+
+                MessageBox.Show("File created.", "Export ok", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (IOException ex) when (IsFileLocked(ex))
+            {
+                MessageBox.Show(
+                    $"'{Path.GetFileName(filePath)}' is currently open." +
+                    $"\n\nIf you want to overwrite it close the file and try again." +
+                    $"\n\nOtherwise select another file name.",
+                    "File Is Open", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch
+            {
+                MessageBox.Show("File not created.", "Export Error", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+        }
     }
 
-    public async Task ExportToTxt(string filePath, ICollection<Circle> circles)
+    static bool IsFileLocked(IOException exception)
     {
-        StringBuilder content = new StringBuilder();
-        content.AppendLine("X\tY"); // Tab-separated header
-
-        foreach (Circle circle in circles)
-        {
-            content.AppendLine($"{circle.X}\t{circle.Y}");
-        }
-
-        await File.WriteAllTextAsync(filePath, content.ToString(), Encoding.UTF8);
+        // 0x80070020 is the standard HRESULT for ERROR_SHARING_VIOLATION
+        // 0x80070021 is the standard HRESULT for ERROR_LOCK_VIOLATION
+        int hr = exception.HResult & 0xFFFF;
+        return hr is 32 or 33;
     }
 }

@@ -1,11 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 using PackCircle.Models;
 using PackCircle.Services;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Reflection.Metadata;
 using System.Windows;
 
 namespace PackCircle;
@@ -89,49 +86,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     public async Task ExportCenterPositions(string cutType)
     {
-        ICollection<Circle> targetCircles = cutType switch
-        {
-            "Triangular" => TriangularCircles,
-            "Rectangular" => RectangularCircles,
-            _ => throw new ArgumentOutOfRangeException(nameof(cutType))
-        };
+        ICollection<Circle> targetCircles = cutType == "Triangular" ? TriangularCircles : RectangularCircles;
         if (targetCircles.Count == 0) return;
 
-        SaveFileDialog saveFileDialog = new SaveFileDialog
-        {
-            Filter = "CSV files (*.csv)|*.csv|Excel Workbook (*.xlsx)|*.xlsx|Text files (*.txt)|*.txt",
-            Title = "Export Center Positions",
-            FileName = "CenterPositions"
-        };
-
-        if (saveFileDialog.ShowDialog() == true)
-        {
-            try
-            {
-                string filePath = saveFileDialog.FileName;
-                string extension = Path.GetExtension(filePath).ToLower();
-                switch (extension)
-                {
-                    case ".csv":
-                        await _exportFileService.ExportToCsv(filePath, targetCircles);
-                        break;
-                    case ".txt":
-                        await _exportFileService.ExportToTxt(filePath, targetCircles);
-                        break;
-                    case ".xlsx":
-                        // Handle Excel export if needed
-                        break;
-                }
-
-                MessageBox.Show("File created.", "Export ok", MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-            }
-            catch
-            {
-                MessageBox.Show("File not created.", "Export Error", MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-            }
-        }
+        await _exportFileService.CreateFile(targetCircles);
     }
 
     bool CanCalculate() => Width > 0 && Height > 0 && Quantity > 0 && Size > 0 && Space >= 0 && Margin >= 0;
