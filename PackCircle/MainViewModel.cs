@@ -1,8 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using PackCircle.Models;
 using PackCircle.Services;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Reflection.Metadata;
 using System.Windows;
 
 namespace PackCircle;
@@ -19,10 +22,11 @@ public partial class MainViewModel : ObservableObject
         { "in", 25.4m },
         { "ft", 304.8m }
     };
+    readonly ExportFileService _exportFileService;
     readonly RectangularPacker _rectangularPacker;
     readonly TriangularPacker _triangularPacker;
 
-    [ObservableProperty] SheetViewMode _currentViewMode = SheetViewMode.FullSheet;
+    [ObservableProperty] SheetViewMode _currentViewMode = SheetViewMode.LastSheet;
     [ObservableProperty][NotifyPropertyChangedFor(nameof(StackSheets))] double _height = 100;
     [ObservableProperty] double _margin = 2;
     [ObservableProperty] int _quantity = 10;
@@ -38,9 +42,13 @@ public partial class MainViewModel : ObservableObject
     public IEnumerable<string> AvailableUnits => _comboUnits.Keys;
     public bool StackSheets => Width >= Height * VerticalCutoffFactor;
 
-    public MainViewModel(CircleViewer circleViewer, RectangularPacker rectangularPacker, TriangularPacker triangularPacker)
+    public MainViewModel(CircleViewer circleViewer,
+        ExportFileService exportFileService,
+        RectangularPacker rectangularPacker,
+        TriangularPacker triangularPacker)
     {
         _circleViewer = circleViewer;
+        _exportFileService = exportFileService;
         _rectangularPacker = rectangularPacker;
         _triangularPacker = triangularPacker;
         Calculate();
@@ -58,7 +66,6 @@ public partial class MainViewModel : ObservableObject
 
         RectangularCircles = _rectangularPacker.Pack(Width, Height, Size, Space, Margin);
         TriangularCircles = _triangularPacker.Pack(Width, Height, Size, Space, Margin);
-
         _rectangularCut.CirclesOnSheet = RectangularCircles.Count;
         if (RectangularCircles.Count > 0)
         {
@@ -66,7 +73,6 @@ public partial class MainViewModel : ObservableObject
         }
 
         _rectangularCut.LastSheetCircles = _quantity - (_rectangularCut.Sheets - 1) * RectangularCircles.Count;
-
         _triangularCut.CirclesOnSheet = TriangularCircles.Count;
         if (TriangularCircles.Count > 0)
         {
@@ -74,15 +80,61 @@ public partial class MainViewModel : ObservableObject
         }
 
         _triangularCut.LastSheetCircles = _quantity - (_triangularCut.Sheets - 1) * TriangularCircles.Count;
-
         _rectangularCut.IsBestChoice = _rectangularCut.CirclesOnSheet > _triangularCut.CirclesOnSheet;
         _triangularCut.IsBestChoice = !_rectangularCut.IsBestChoice;
-
         _circleViewer.UpdatePreviews(CurrentViewMode, RectangularCircles, TriangularCircles, _rectangularCut,
             _triangularCut, _quantity);
     }
 
-    bool CanCalculate() => Width > 0 && Height > 0 && Size > 0 && Space >= 0 && Margin >= 0;
+    [RelayCommand]
+    public async Task ExportCenterPositions(string cutType)
+    {
+        ICollection<Circle> targetCircles = cutType switch
+        {
+            "Triangular" => TriangularCircles,
+            "Rectangular" => RectangularCircles,
+            _ => throw new ArgumentOutOfRangeException(nameof(cutType))
+        };
+        if (targetCircles.Count == 0) return;
+
+        SaveFileDialog saveFileDialog = new SaveFileDialog
+        {
+            Filter = "CSV files (*.csv)|*.csv|Excel Workbook (*.xlsx)|*.xlsx|Text files (*.txt)|*.txt",
+            Title = "Export Center Positions",
+            FileName = "CenterPositions"
+        };
+
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            try
+            {
+                string filePath = saveFileDialog.FileName;
+                string extension = Path.GetExtension(filePath).ToLower();
+                switch (extension)
+                {
+                    case ".csv":
+                        await _exportFileService.ExportToCsv(filePath, targetCircles);
+                        break;
+                    case ".txt":
+                        await _exportFileService.ExportToTxt(filePath, targetCircles);
+                        break;
+                    case ".xlsx":
+                        // Handle Excel export if needed
+                        break;
+                }
+
+                MessageBox.Show("File created.", "Export ok", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch
+            {
+                MessageBox.Show("File not created.", "Export Error", MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+        }
+    }
+
+    bool CanCalculate() => Width > 0 && Height > 0 && Quantity > 0 && Size > 0 && Space >= 0 && Margin >= 0;
 
     [RelayCommand]
     void ChangeViewMode(SheetViewMode selectedMode) => CurrentViewMode = selectedMode;
