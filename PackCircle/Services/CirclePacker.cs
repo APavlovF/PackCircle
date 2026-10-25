@@ -5,7 +5,7 @@ namespace PackCircle.Services;
 
 public abstract class CirclePacker
 {
-    protected const double Eps = 1e-9;
+    public const double Eps = 1e-9;
 
     public record struct PackContext(
         double EffectiveW,
