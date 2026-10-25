@@ -18,12 +18,12 @@ public partial class App
             {
                 // Services
                 services.AddTransient<CircleViewer>();
-                services.AddTransient<IExport, CsvExport>();
-                services.AddTransient<IExport, ExcelExport>();
+                services.AddTransient<CsvExport>();
+                services.AddTransient<ExcelExport>();
                 services.AddTransient<ExportFileService>();
                 services.AddTransient<RectangularPacker>();
                 services.AddTransient<TriangularPacker>();
-                services.AddTransient<IExport, TxtExport>();
+                services.AddTransient<TxtExport>();
                 // ViewModels
                 services.AddSingleton<MainViewModel>();
                 // Windows

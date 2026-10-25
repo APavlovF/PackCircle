@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace PackCircle.Services;
 
-public class ExportFileService(IExport csvExport, IExport excelExport, IExport txtExport)
+public class ExportFileService(CsvExport csvExport, ExcelExport excelExport, TxtExport txtExport)
 {
     readonly Dictionary<string, string> _filters = new()
     {
