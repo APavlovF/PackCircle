@@ -92,7 +92,7 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="Circle size:" Margin="3"/>
+                        <Label Grid.Row="0" Grid.Column="0" Content="Circle size &#x00D8;:" Margin="3"/>
                     <TextBox x:Name="FirstInput" Grid.Row="0" Grid.Column="1" Text="{Binding Size, Mode=TwoWay}" Margin="3"/>
                     <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AvailableUnits}" Margin="3"
                               SelectedItem="{Binding SelectedUnit}" VerticalAlignment="Center"/>

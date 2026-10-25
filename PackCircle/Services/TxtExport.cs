@@ -13,7 +13,7 @@ public class TxtExport : IExport
 
         foreach (Circle circle in circles)
         {
-            content.AppendLine($"{circle.X}\t{circle.Y}");
+            content.AppendLine($"{circle.GetCenterX()}\t{circle.GetCenterY()}");
         }
 
         await File.WriteAllTextAsync(filePath, content.ToString(), Encoding.UTF8);

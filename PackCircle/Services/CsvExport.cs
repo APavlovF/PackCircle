@@ -12,7 +12,7 @@ public class CsvExport : IExport
         csvContent.AppendLine("X,Y");
         foreach (Circle circle in circles)
         {
-            csvContent.AppendLine($"{circle.X},{circle.Y}");
+            csvContent.AppendLine($"{circle.GetCenterX()},{circle.GetCenterY()}");
         }
 
         await File.WriteAllTextAsync(filePath, csvContent.ToString(), Encoding.UTF8);
