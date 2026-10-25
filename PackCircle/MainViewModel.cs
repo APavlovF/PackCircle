@@ -63,24 +63,24 @@ public partial class MainViewModel : ObservableObject
 
         RectangularCircles = _rectangularPacker.Pack(Width, Height, Size, Space, Margin);
         TriangularCircles = _triangularPacker.Pack(Width, Height, Size, Space, Margin);
-        _rectangularCut.CirclesOnSheet = RectangularCircles.Count;
+        RectangularCut.CirclesOnSheet = RectangularCircles.Count;
         if (RectangularCircles.Count > 0)
         {
-            _rectangularCut.Sheets = (int)Math.Ceiling((double)_quantity / RectangularCircles.Count);
+            RectangularCut.Sheets = (int)Math.Ceiling((double)Quantity / RectangularCircles.Count);
         }
 
-        _rectangularCut.LastSheetCircles = _quantity - (_rectangularCut.Sheets - 1) * RectangularCircles.Count;
-        _triangularCut.CirclesOnSheet = TriangularCircles.Count;
+        RectangularCut.LastSheetCircles = Quantity - (RectangularCut.Sheets - 1) * RectangularCircles.Count;
+        TriangularCut.CirclesOnSheet = TriangularCircles.Count;
         if (TriangularCircles.Count > 0)
         {
-            _triangularCut.Sheets = (int)Math.Ceiling((double)_quantity / TriangularCircles.Count);
+            TriangularCut.Sheets = (int)Math.Ceiling((double)Quantity / TriangularCircles.Count);
         }
 
-        _triangularCut.LastSheetCircles = _quantity - (_triangularCut.Sheets - 1) * TriangularCircles.Count;
-        _rectangularCut.IsBestChoice = _rectangularCut.CirclesOnSheet > _triangularCut.CirclesOnSheet;
-        _triangularCut.IsBestChoice = !_rectangularCut.IsBestChoice;
-        _circleViewer.UpdatePreviews(CurrentViewMode, RectangularCircles, TriangularCircles, _rectangularCut,
-            _triangularCut, _quantity);
+        TriangularCut.LastSheetCircles = Quantity - (TriangularCut.Sheets - 1) * TriangularCircles.Count;
+        RectangularCut.IsBestChoice = RectangularCut.CirclesOnSheet > TriangularCut.CirclesOnSheet;
+        TriangularCut.IsBestChoice = !RectangularCut.IsBestChoice;
+        _circleViewer.UpdatePreviews(CurrentViewMode, RectangularCircles, TriangularCircles, RectangularCut,
+            TriangularCut, Quantity);
     }
 
     [RelayCommand]
@@ -101,7 +101,7 @@ public partial class MainViewModel : ObservableObject
     void CloseApplication() => Application.Current.Shutdown();
 
     partial void OnCurrentViewModeChanged(SheetViewMode value) => _circleViewer.UpdatePreviews(value, RectangularCircles,
-        TriangularCircles, _rectangularCut, _triangularCut, _quantity);
+        TriangularCircles, RectangularCut, TriangularCut, Quantity);
 
     partial void OnHeightChanged(double value) => Calculate();
 
