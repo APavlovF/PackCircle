@@ -84,12 +84,12 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ExportCenterPositions(string cutType)
+    public async Task ExportCenterPositions(ExportParameter parameter)
     {
-        ICollection<Circle> targetCircles = cutType == "Triangular" ? TriangularCircles : RectangularCircles;
+        ICollection<Circle> targetCircles = parameter.CutType == "Triangular" ? TriangularCircles : RectangularCircles;
         if (targetCircles.Count == 0) return;
 
-        await _exportFileService.CreateFile(targetCircles);
+        await _exportFileService.CreateFile(targetCircles, parameter.FileType);
     }
 
     bool CanCalculate() => Width > 0 && Height > 0 && Quantity > 0 && Size > 0 && Space >= 0 && Margin >= 0;
@@ -114,4 +114,15 @@ public partial class MainViewModel : ObservableObject
     partial void OnSpaceChanged(double value) => Calculate();
 
     partial void OnWidthChanged(double value) => Calculate();
+
+    [RelayCommand]
+    void ShowAboutInfo()
+    {
+        string message = "Circles Packer App\n" +
+                         "Copyright © 2026 All Rights Reserved\n\n" +
+                         "Support Email: pavlovfontanka@gmail.com";
+        string caption = "About Circles Packer";
+
+        MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Information);
+    }
 }

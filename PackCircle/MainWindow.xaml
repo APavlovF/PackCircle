@@ -4,22 +4,77 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PackCircle"
+        xmlns:models="clr-namespace:PackCircle.Models"
         mc:Ignorable="d"
         FocusManager.FocusedElement="{Binding ElementName=FirstInput}"
-        Title="Circles packer" Height="790" Width="800"
+        Title="Circles packer" Height="780" Width="800"
         d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}">
 
-    <Grid>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" 
+              Background="{DynamicResource MaterialDesignPaper}" 
+              TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+
+            <MenuItem Header="_File">
+                <MenuItem Header="Export Rectangular centers">
+                    <MenuItem Header="CSV" Command="{Binding ExportCenterPositionsCommand}">
+                        <MenuItem.CommandParameter>
+                            <models:ExportParameter CutType="Rectangular" FileType="CSV" />
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Excel" Command="{Binding ExportCenterPositionsCommand}">
+                        <MenuItem.CommandParameter>
+                            <models:ExportParameter CutType="Rectangular" FileType="Excel" />
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Text file" Command="{Binding ExportCenterPositionsCommand}">
+                        <MenuItem.CommandParameter>
+                            <models:ExportParameter CutType="Rectangular" FileType="Text" />
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Export Triangular centers">
+                    <MenuItem Header="CSV" Command="{Binding ExportCenterPositionsCommand}">
+                        <MenuItem.CommandParameter>
+                            <models:ExportParameter CutType="Triangular" FileType="CSV" />
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Excel" Command="{Binding ExportCenterPositionsCommand}">
+                        <MenuItem.CommandParameter>
+                            <models:ExportParameter CutType="Triangular" FileType="Excel" />
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="Text file" Command="{Binding ExportCenterPositionsCommand}">
+                        <MenuItem.CommandParameter>
+                            <models:ExportParameter CutType="Triangular" FileType="Text" />
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Exit" Command="{Binding CloseApplicationCommand}"/>
+            </MenuItem>
+
+            <MenuItem Header="_About">
+                <MenuItem Header="Help" Command="{Binding ShowAboutInfoCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid Background="#F5F5F5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="320"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Margin="15">
+        <StackPanel Grid.Column="0" Margin="15,5">
             <!-- Setup Inputs Go Here (Size, Qty, Width, etc.) -->
             <GroupBox Header="Setup"
                       FocusManager.IsFocusScope="True"
                       x:Name="SetupContainer">
+                <GroupBox.Resources>
+                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                </GroupBox.Resources>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -36,32 +91,32 @@
                         <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="Circle size:" Margin="5"/>
-                    <TextBox x:Name="FirstInput" Grid.Row="0" Grid.Column="1" Text="{Binding Size, Mode=TwoWay}" Margin="5"/>
-                    <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AvailableUnits}" Margin="5"
+                    <Label Grid.Row="0" Grid.Column="0" Content="Circle size:" Margin="3"/>
+                    <TextBox x:Name="FirstInput" Grid.Row="0" Grid.Column="1" Text="{Binding Size, Mode=TwoWay}" Margin="3"/>
+                    <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AvailableUnits}" Margin="3"
                               SelectedItem="{Binding SelectedUnit}" VerticalAlignment="Center"/>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Circles quantity:" Margin="5"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Quantity, Mode=TwoWay}" Margin="5"/>
-                    <Label Grid.Row="1" Grid.Column="2" Content="pc(s)" Margin="5"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Circles quantity:" Margin="3"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Quantity, Mode=TwoWay}" Margin="3"/>
+                    <Label Grid.Row="1" Grid.Column="2" Content="pc(s)" Margin="3"/>
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Space:" Margin="5"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Space, Mode=TwoWay}" Margin="5"/>
-                    <Label Grid.Row="2" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="5"/>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Space:" Margin="3"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Space, Mode=TwoWay}" Margin="3"/>
+                    <Label Grid.Row="2" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="3"/>
 
-                    <Label Grid.Row="3" Grid.Column="0" Content="Sheet width:" Margin="5"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Width, Mode=TwoWay}" Margin="5"/>
-                    <Label Grid.Row="3" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="5"/>
+                    <Label Grid.Row="3" Grid.Column="0" Content="Sheet width:" Margin="3"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Width, Mode=TwoWay}" Margin="3"/>
+                    <Label Grid.Row="3" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="3"/>
 
-                    <Label Grid.Row="4" Grid.Column="0" Content="Sheet height:" Margin="5"/>
-                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Height, Mode=TwoWay}" Margin="5"/>
-                    <Label Grid.Row="4" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="5"/>
+                    <Label Grid.Row="4" Grid.Column="0" Content="Sheet height:" Margin="3"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Height, Mode=TwoWay}" Margin="3"/>
+                    <Label Grid.Row="4" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="3"/>
 
-                    <Label Grid.Row="5" Grid.Column="0" Content="Sheet margin:" Margin="5"/>
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Margin, Mode=TwoWay}" Margin="5"/>
-                    <Label Grid.Row="5" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="5"/>
+                    <Label Grid.Row="5" Grid.Column="0" Content="Sheet margin:" Margin="3"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Margin, Mode=TwoWay}" Margin="3"/>
+                    <Label Grid.Row="5" Grid.Column="2" Content="{Binding SelectedUnit}" Margin="3"/>
 
-                    <RadioButton Grid.Row="6" Grid.Column="0" Content="Full sheet" Margin="5">
+                    <RadioButton Grid.Row="6" Grid.Column="0" Content="Full sheet" Margin="3">
                         <RadioButton.Style>
                             <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
                                 <Setter Property="IsChecked" Value="False"/>
@@ -101,11 +156,17 @@
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="Rectangular cut" IsEnabled="False">
+            <GroupBox Header="Rectangular cut">
+                <GroupBox.Resources>
+                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+                        <Setter Property="IsReadOnly" Value="True" />
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                </GroupBox.Resources>
                 <GroupBox.Style>
-                    <Style TargetType="GroupBox" BasedOn="{StaticResource MaterialDesignGroupBox}">
-                        <Setter Property="Background" Value="White"/>
-
+                    <Style TargetType="GroupBox" BasedOn="{StaticResource MaterialDesignCardGroupBox}">
+                        <Setter Property="Background" Value="#F5F5F5"/>
+                        <Setter Property="Margin" Value="2" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding RectangularCut.IsBestChoice}"
                                          Value="True">
@@ -126,25 +187,31 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Content="Sheets:" Margin="5"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding RectangularCut.Sheets}" Margin="5"/>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Sheets:" Margin="3"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding RectangularCut.Sheets}" Margin="3"/>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Quantity/Sheet:" Margin="5"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding RectangularCut.CirclesOnSheet}" Margin="5"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Quantity/Sheet:" Margin="3"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding RectangularCut.CirclesOnSheet}" Margin="3"/>
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Last sheet circles:" Margin="5"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding RectangularCut.LastSheetCircles}" Margin="5"/>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Last sheet circles:" Margin="3"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding RectangularCut.LastSheetCircles}" Margin="3"/>
 
-                    <Label Grid.Row="3" Grid.Column="0" Content="Last sheet fill %:" Margin="5"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding RectangularCut.LastSheetPercent, Mode=OneWay, StringFormat=P1}" Margin="5"/>
+                    <Label Grid.Row="3" Grid.Column="0" Content="Last sheet fill %:" Margin="3"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding RectangularCut.LastSheetPercent, Mode=OneWay, StringFormat=P1}" Margin="3"/>
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="Triangular cut" IsEnabled="False">
+            <GroupBox Header="Triangular cut">
+                <GroupBox.Resources>
+                    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+                        <Setter Property="IsReadOnly" Value="True" />
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                </GroupBox.Resources>
                 <GroupBox.Style>
-                    <Style TargetType="GroupBox" BasedOn="{StaticResource MaterialDesignGroupBox}">
-                        <Setter Property="Background" Value="White"/>
-
+                    <Style TargetType="GroupBox" BasedOn="{StaticResource MaterialDesignCardGroupBox}">
+                        <Setter Property="Background" Value="#F5F5F5"/>
+                        <Setter Property="Margin" Value="2" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding TriangularCut.IsBestChoice}"
                                          Value="True">
@@ -165,21 +232,21 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Content="Sheets:" Margin="5"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TriangularCut.Sheets}" Margin="5"/>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Sheets:" Margin="3"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TriangularCut.Sheets}" Margin="3"/>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Quantity/Sheet:" Margin="5"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TriangularCut.CirclesOnSheet}" Margin="5"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Quantity/Sheet:" Margin="3"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding TriangularCut.CirclesOnSheet}" Margin="3"/>
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Last sheet circles:" Margin="5"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TriangularCut.LastSheetCircles}" Margin="5"/>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Last sheet circles:" Margin="3"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TriangularCut.LastSheetCircles}" Margin="3"/>
 
-                    <Label Grid.Row="3" Grid.Column="0" Content="Last sheet fill %:" Margin="5"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding TriangularCut.LastSheetPercent, Mode=OneWay, StringFormat=P1}" Margin="5"/>
+                    <Label Grid.Row="3" Grid.Column="0" Content="Last sheet fill %:" Margin="3"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding TriangularCut.LastSheetPercent, Mode=OneWay, StringFormat=P1}" Margin="3"/>
                 </Grid>
             </GroupBox>
 
-            <Grid>
+            <Grid Margin="2,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -187,7 +254,7 @@
 
                 <Button Grid.Column="1" Content="Close" 
                         Command="{Binding CloseApplicationCommand}"
-                        Margin="10,10"/>
+                        Margin="0,5"/>
             </Grid>
         </StackPanel>
 
@@ -218,8 +285,12 @@
                     </Ellipse>
                 </DataTemplate>
             </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="275*"/>
+                <RowDefinition Height="499*"/>
+            </Grid.RowDefinitions>
 
-            <UniformGrid Margin="10">
+            <UniformGrid Margin="10,10,10,10" Grid.RowSpan="2">
                 <UniformGrid.Style>
                     <Style TargetType="UniformGrid">
                         <Setter Property="Columns" Value="2"/>
@@ -234,18 +305,21 @@
                 </UniformGrid.Style>
 
                 <!-- PREVIEW 1: RECTANGULAR -->
-                <Grid Margin="10">
+                <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Rectangular Cut Preview" FontWeight="Bold" FontSize="16" Margin="0,5"
                                    VerticalAlignment="Center"/>
-                         <Button Content="Export centers" Margin="10,5"
-                                Command="{Binding ExportCenterPositionsCommand}"
-                                CommandParameter="Rectangular"/>
+                        <!--<Button Content="Export centers" Margin="10,5"
+                                Command="{Binding ExportCenterPositionsCommand}">
+                            <Button.CommandParameter>
+                                <models:ExportParameter CutType="Rectangular" FileType="" />
+                            </Button.CommandParameter>
+                            </Button>-->
                     </StackPanel>
                     <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="Both"
                              HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -266,18 +340,20 @@
                 </Grid>
 
                 <!-- PREVIEW 2: TRIANGULAR -->
-                <Grid Margin="10">
+                <Grid Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Triangular Cut Preview" FontWeight="Bold" FontSize="16" Margin="0,5"
                                    VerticalAlignment="Center"/>
-                        <Button Content="Export centers" Margin="10,5"
-                            Command="{Binding ExportCenterPositionsCommand}"
-                            CommandParameter="Triangular"/>
+                        <!--<Button Content="Export centers" Margin="10,5"
+                            Command="{Binding ExportCenterPositionsCommand}">
+                            <Button.CommandParameter>
+                                    <models:ExportParameter CutType="Triangular" FileType="" />
+                            </Button.CommandParameter>
+                            </Button>-->
                     </StackPanel>
                     <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="Both"
                              HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -299,4 +375,5 @@
             </UniformGrid>
         </Grid>
     </Grid>
+        </DockPanel>
 </Window>

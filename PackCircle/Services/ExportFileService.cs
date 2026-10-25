@@ -1,17 +1,24 @@
-﻿using PackCircle.Models;
+﻿using Microsoft.Win32;
+using PackCircle.Models;
 using System.IO;
 using System.Windows;
-using Microsoft.Win32;
 
 namespace PackCircle.Services;
 
 public class ExportFileService(IExport csvExport, IExport excelExport, IExport txtExport)
 {
-    public async Task CreateFile(ICollection<Circle> circles)
+    readonly Dictionary<string, string> _filters = new()
+    {
+        { "CSV", "CSV files (*.csv)|*.csv" },
+        { "Excel", "Excel Workbook (*.xlsx)|*.xlsx" },
+        { "Text", "Text files (*.txt)|*.txt" }
+    };
+
+    public async Task CreateFile(ICollection<Circle> circles, string fileType)
     {
         SaveFileDialog saveFileDialog = new SaveFileDialog
         {
-            Filter = "CSV files (*.csv)|*.csv|Excel Workbook (*.xlsx)|*.xlsx|Text files (*.txt)|*.txt",
+            Filter = Filter(fileType),
             Title = "Export Center Positions",
             FileName = "CenterPositions"
         };
@@ -53,6 +60,8 @@ public class ExportFileService(IExport csvExport, IExport excelExport, IExport t
             }
         }
     }
+
+    string Filter(string fileType) => _filters.GetValueOrDefault(fileType, string.Join('|', _filters.Values));
 
     static bool IsFileLocked(IOException exception)
     {

@@ -10,6 +10,12 @@
                                              SecondaryColor="Teal" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                <Setter Property="Margin" Value="5" />
+            </Style>
+            <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource MaterialDesignCardGroupBox}">
+                <Setter Property="Margin" Value="2" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
