@@ -8,7 +8,8 @@
                 <materialDesign:BundledTheme BaseTheme="Light" 
                                              PrimaryColor="Indigo" 
                                              SecondaryColor="Teal" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignPaperButton}">
                 <Setter Property="Margin" Value="5" />
