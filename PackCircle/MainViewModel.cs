@@ -52,7 +52,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void Calculate()
+    void Calculate()
     {
         if (!CanCalculate())
         {
@@ -83,15 +83,6 @@ public partial class MainViewModel : ObservableObject
             TriangularCut, Quantity);
     }
 
-    [RelayCommand]
-    public async Task ExportCenterPositions(ExportParameter parameter)
-    {
-        ICollection<Circle> targetCircles = parameter.CutType == "Triangular" ? TriangularCircles : RectangularCircles;
-        if (targetCircles.Count == 0) return;
-
-        await _exportFileService.CreateFile(targetCircles, parameter.FileType);
-    }
-
     bool CanCalculate() => Width > 0 && Height > 0 && Quantity > 0 && Size > 0 && Space >= 0 && Margin >= 0;
 
     [RelayCommand]
@@ -99,6 +90,15 @@ public partial class MainViewModel : ObservableObject
 
     [RelayCommand]
     void CloseApplication() => Application.Current.Shutdown();
+
+    [RelayCommand]
+    async Task ExportCenterPositions(ExportParameter parameter)
+    {
+        ICollection<Circle> targetCircles = parameter.CutType == "Triangular" ? TriangularCircles : RectangularCircles;
+        if (targetCircles.Count == 0) return;
+
+        await _exportFileService.CreateFile(targetCircles, parameter.FileType);
+    }
 
     partial void OnCurrentViewModeChanged(SheetViewMode value) => _circleViewer.UpdatePreviews(value, RectangularCircles,
         TriangularCircles, RectangularCut, TriangularCut, Quantity);

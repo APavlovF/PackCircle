@@ -6,6 +6,8 @@ namespace PackCircle.Services;
 
 public class CsvExport : IExport
 {
+    public FileTypeExtension Type => FileTypeExtension.csv;
+
     public async Task Export(string filePath, ICollection<Circle> circles)
     {
         StringBuilder csvContent = new StringBuilder();

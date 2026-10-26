@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace PackCircle.Services;
 
-public class ExportFileService(CsvExport csvExport, ExcelExport excelExport, TxtExport txtExport)
+public class ExportFileService(ExportFactory exportFactory)
 {
     readonly Dictionary<string, string> _filters = new()
     {
@@ -29,21 +29,12 @@ public class ExportFileService(CsvExport csvExport, ExcelExport excelExport, Txt
             try
             {
                 string extension = Path.GetExtension(filePath).ToLower();
-                switch (extension)
+                if (Enum.TryParse(extension.TrimStart('.'), out FileTypeExtension type))
                 {
-                    case ".csv":
-                        await csvExport.Export(filePath, circles);
-                        break;
-                    case ".txt":
-                        await txtExport.Export(filePath, circles);
-                        break;
-                    case ".xlsx":
-                        await excelExport.Export(filePath, circles);
-                        break;
+                    await exportFactory.Get(type).Export(filePath, circles);
+                    MessageBox.Show("File created.", "Export ok", MessageBoxButton.OK,
+                        MessageBoxImage.Information);
                 }
-
-                MessageBox.Show("File created.", "Export ok", MessageBoxButton.OK,
-                    MessageBoxImage.Information);
             }
             catch (IOException ex) when (IsFileLocked(ex))
             {

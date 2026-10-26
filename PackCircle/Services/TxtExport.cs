@@ -6,6 +6,8 @@ namespace PackCircle.Services;
 
 public class TxtExport : IExport
 {
+    public FileTypeExtension Type => FileTypeExtension.txt;
+
     public async Task Export(string filePath, ICollection<Circle> circles)
     {
         StringBuilder content = new StringBuilder();

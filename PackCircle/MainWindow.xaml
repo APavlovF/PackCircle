@@ -55,8 +55,8 @@
                 <MenuItem Header="Exit" Command="{Binding CloseApplicationCommand}"/>
             </MenuItem>
 
-            <MenuItem Header="_About">
-                <MenuItem Header="Help" Command="{Binding ShowAboutInfoCommand}"/>
+            <MenuItem Header="_Help">
+                <MenuItem Header="About" Command="{Binding ShowAboutInfoCommand}"/>
             </MenuItem>
         </Menu>
 
@@ -122,14 +122,12 @@
                             <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
                                 <Setter Property="IsChecked" Value="False"/>
                                 <Style.Triggers>
-                                    <!-- Natively turns True if Enum equals FullSheet -->
                                     <DataTrigger Binding="{Binding CurrentViewMode}" Value="{x:Static local:SheetViewMode.FullSheet}">
                                         <Setter Property="IsChecked" Value="True"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </RadioButton.Style>
-                        <!-- When clicked, instantly pass the Enum value back to our property -->
                         <RadioButton.InputBindings>
                             <MouseBinding MouseAction="LeftClick" Command="{Binding ChangeViewModeCommand}" CommandParameter="{x:Static local:SheetViewMode.FullSheet}"/>
                         </RadioButton.InputBindings>
@@ -139,7 +137,6 @@
                             <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
                                 <Setter Property="IsChecked" Value="False"/>
                                 <Style.Triggers>
-                                    <!-- Natively turns True if Enum equals LastSheet -->
                                     <DataTrigger Binding="{Binding CurrentViewMode}" Value="{x:Static local:SheetViewMode.LastSheet}">
                                         <Setter Property="IsChecked" Value="True"/>
                                     </DataTrigger>
@@ -150,10 +147,6 @@
                             <MouseBinding MouseAction="LeftClick" Command="{Binding ChangeViewModeCommand}" CommandParameter="{x:Static local:SheetViewMode.LastSheet}"/>
                         </RadioButton.InputBindings>
                     </RadioButton>
-
-                    <!--<Button Grid.Row="6" Grid.Column="2" Content="Calculate" 
-                            Command="{Binding CalculateCommand}" Margin="0,5"/>-->
-
                 </Grid>
             </GroupBox>
 
@@ -315,12 +308,6 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Rectangular Cut Preview" FontWeight="Bold" FontSize="16" Margin="0,5"
                                    VerticalAlignment="Center"/>
-                        <!--<Button Content="Export centers" Margin="10,5"
-                                Command="{Binding ExportCenterPositionsCommand}">
-                            <Button.CommandParameter>
-                                <models:ExportParameter CutType="Rectangular" FileType="" />
-                            </Button.CommandParameter>
-                            </Button>-->
                     </StackPanel>
                     <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="Both"
                              HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -349,12 +336,6 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Triangular Cut Preview" FontWeight="Bold" FontSize="16" Margin="0,5"
                                    VerticalAlignment="Center"/>
-                        <!--<Button Content="Export centers" Margin="10,5"
-                            Command="{Binding ExportCenterPositionsCommand}">
-                            <Button.CommandParameter>
-                                    <models:ExportParameter CutType="Triangular" FileType="" />
-                            </Button.CommandParameter>
-                            </Button>-->
                     </StackPanel>
                     <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="Both"
                              HorizontalAlignment="Center" VerticalAlignment="Center">
