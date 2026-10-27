@@ -120,7 +120,7 @@ public partial class MainViewModel : ObservableObject
     {
         string message = "Circles Packer App\n" +
                          "Copyright © 2026 All Rights Reserved\n\n" +
-                         "Support Email: pavlovfontanka@gmail.com";
+                         "Email: pavlovfontanka@gmail.com";
         string caption = "About Circles Packer";
 
         MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Information);
