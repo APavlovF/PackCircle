@@ -1,16 +1,21 @@
-name: WPF CI Build and Test
+name: WPF CI/CD Pipeline
 
 on:
   push:
     branches: [ master ]
+    tags:
+      - 'v*' # Triggers the deployment phase only when you push a tag like v1.0.0
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+
+# Gives the runner permission to create a GitHub Release and upload files
+permissions:
+  contents: write
 
 jobs:
   build-and-test:
-    # WPF requires Windows to build and run properly
-    runs-on: windows-latest 
-
+    runs-on: windows-latest
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -18,7 +23,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0' # Match this to your WPF app version (e.g., 6.0, 8.0, 9.0)
+        dotnet-version: '10.0' # Match your target version
 
     - name: Restore Dependencies
       run: dotnet restore
@@ -29,9 +34,30 @@ jobs:
     - name: Run MSTests
       run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
 
-    - name: Upload Test Results
-      uses: actions/upload-artifact@v4
-      if: always() # Ensures test logs upload even if tests fail
+  deploy:
+    runs-on: windows-latest
+    needs: build-and-test # 👈 This ensures deployment ONLY happens if tests pass!
+    if: startsWith(github.ref, 'refs/tags/v') # 👈 This ensures deployment ONLY happens on version tags!
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
       with:
-        name: mstest-results
-        path: '**/TestResults/test-results.trx'
+        dotnet-version: '8.0'
+
+    - name: Publish WPF App (Compile to clean production folder)
+      run: dotnet publish --configuration Release -o ./publish_output /p:PublishProfile=Properties\PublishProfiles\FolderProfile.pubxml
+
+    - name: Zip the Application Binaries
+      run: Compress-Archive -Path ./publish_output/* -DestinationPath ./WPF_PackCircle_Release.zip
+
+    - name: Create GitHub Release and Upload Zip
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./WPF_PackCircle_Release.zip
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
